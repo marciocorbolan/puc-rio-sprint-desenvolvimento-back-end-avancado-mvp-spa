@@ -1,4 +1,4 @@
-# PUC RIO - Desenvolvimento Back-end Avançado - MVP - Blog SPA
+# PUC RIO - Desenvolvimento Back-end Avançado - MVP - E-Futebol SPA
 
 Este projeto é o MVP da sprint de Desenvolvimento Back-end Avançado, focado na construção de um SPA.
 
