@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Futebol - MVP PUC-Rio</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Global Loading Overlay -->
+    <div id="global-loading" class="global-loading d-none">
+        <div class="spinner-border text-light" role="status"></div>
+        <p class="text-light mt-3">Carregando...</p>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="javascript:void(0)" onclick="navigateTo('home')">E-Futebol - MVP PUC-Rio</a>
+            
+            <div class="d-flex flex-nowrap align-items-center">
+                <div id="auth-container" class="d-flex flex-nowrap align-items-center">
+                    
+                    <div id="auth-logged-out" class="d-flex flex-nowrap">
+                        <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Cadastrar</button>
+                    </div>
+
+                    <div id="auth-logged-in" class="d-flex flex-nowrap d-none">
+                        <button class="btn btn-outline-primary me-2" onclick="navigateTo('meu-cadastro')">Meu Cadastro</button>
+                        <button class="btn btn-outline-primary me-2" onclick="navigateTo('campeonato')">Campeonato</button>
+                        <button class="btn btn-outline-danger" onclick="executarLogout()">Logout</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <main class="container mt-5 pt-5">
+        
+        <!-- Seção Home -->
+        <section id="home" class="page-view">
+            <div class="p-5 mb-4 bg-light rounded-3 home-header">
+                <div class="container-fluid py-5 text-center">
+                    <h1 class="display-5 fw-bold page-title">Bem-vindo ao E-Futebol</h1>
+                    <p class="page-subtitle">Seu jogo está aqui</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção Meu Cadastro -->
+        <section id="meu-cadastro" class="page-view" style="display: none;">
+            <div class="card p-4 mx-auto" style="max-width: 600px;">
+                <h2>Meu Cadastro</h2>
+                <div id="profile-feedback" class="alert" style="display: none;"></div>
+
+                <form id="profile-form">
+                    <div class="mb-3">
+                        <label for="profile-nome" class="form-label">Nome completo</label>
+                        <input type="text" class="form-control" id="profile-nome" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="profile-email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="profile-email" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="profile-senha" class="form-label">Nova Senha (deixe em branco para manter a atual)</label>
+                        <input type="password" class="form-control" id="profile-senha">
+                    </div>
+                    
+                    <button type="button" class="btn btn-secondary" onclick="navigateTo('home')">Cancelar</button>
+                    <button type="submit" class="btn btn-custom-site-filled">Salvar</button>
+                </form>
+            </div>
+        </section>
+        
+        <!-- Seção Campeonato -->
+        <section id="campeonato" class="page-view" style="display: none;">
+            <!-- Cabeçalho Principal -->
+            <div class="p-4 mb-4 rounded-3 championship-header d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                    <img id="campeonato-logo" src="" alt="Logo Campeonato" style="height: 50px; display: none;">
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <h2 class="fw-bold mb-0 text-dark" id="campeonato-nome">Campeonato Brasileiro 2026</h2>
+                            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2 py-1" id="campeonato-status">● Em andamento</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo Principal: Tabela + Rodadas -->
+            <div class="row g-4">
+                <!-- Coluna Esquerda: Tabela de Classificação -->
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <h4 class="fw-bold mb-3 ms-2">Tabela de classificação</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle championship-table mb-2">
+                                <thead>
+                                    <tr class="text-muted small border-bottom">
+                                        <th scope="col" class="text-center">#</th>
+                                        <th scope="col">Time</th>
+                                        <th scope="col" class="text-center">Pts</th>
+                                        <th scope="col" class="text-center">J</th>
+                                        <th scope="col" class="text-center">V</th>
+                                        <th scope="col" class="text-center">E</th>
+                                        <th scope="col" class="text-center">D</th>
+                                        <th scope="col" class="text-center">SG</th>
+                                        <th scope="col" class="text-center">GP</th>
+                                        <th scope="col" class="text-center">GC</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-classificacao-body">
+                                    <!-- Preenchido dinamicamente via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Legenda de Faixas de Classificação -->
+                        <div id="tabela-legenda" class="d-flex flex-wrap gap-3 mt-3 px-2 small text-muted">
+                            <!-- Preenchido dinamicamente via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna Direita: Navegação de Rodadas -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold mb-0">Rodadas</h4>
+                            <div class="d-flex align-items-center gap-2 bg-light rounded-pill px-3 py-1">
+                                <button class="btn btn-sm btn-link text-dark p-0 text-decoration-none" id="btn-rodada-anterior" onclick="mudarRodada(-1)">&lt;</button>
+                                <span class="fw-bold small px-2" id="rodada-titulo">RODADA --</span>
+                                <button class="btn btn-sm btn-link text-dark p-0 text-decoration-none" id="btn-rodada-proxima" onclick="mudarRodada(1)">&gt;</button>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Jogos da Rodada -->
+                        <div id="rodada-jogos-container" class="d-flex flex-column gap-2">
+                            <!-- Preenchido dinamicamente via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal de Login -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content mx-auto my-5" style="max-width: 500px; border-radius: .5rem; background: #fff;">
+          <div class="modal-header">
+            <h5 class="modal-title" id="loginModalLabel">Login</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="login-form">
+            <div class="modal-body">
+                <div id="login-feedback" class="alert" style="display: none;"></div>
+
+                <div class="mb-3">
+                    <label for="login-cpfcnpj" class="form-label">CPF ou CNPJ</label>
+                    <input type="text" 
+                           class="form-control" 
+                           id="login-cpfcnpj" 
+                           required 
+                           minlength="11" 
+                           maxlength="18" 
+                           pattern="^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})$"
+                           title="Digite um CPF (11 dígitos) ou CNPJ (14 dígitos) válido.">
+                </div>
+                <div class="mb-3">
+                    <label for="login-senha" class="form-label">Senha</label>
+                    <input type="password" 
+                           class="form-control" 
+                           id="login-senha" 
+                           required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="submit" class="btn btn-custom-site-filled">Entrar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Cadastro -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content mx-auto my-5" style="max-width: 500px; border-radius: .5rem; background: #fff;">
+          <div class="modal-header">
+            <h5 class="modal-title" id="registerModalLabel">Cadastrar conta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="register-form">
+            <div class="modal-body">
+                <div id="register-feedback" class="alert" style="display: none;"></div>
+
+                <div class="mb-3">
+                    <label for="register-nome" class="form-label">Nome completo</label>
+                    <input type="text" class="form-control" id="register-nome" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="register-email" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" id="register-email" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="register-cpfcnpj" class="form-label">CPF ou CNPJ</label>
+                    <input type="text" 
+                        class="form-control" 
+                        id="register-cpfcnpj" 
+                        required 
+                        minlength="11" 
+                        maxlength="18" 
+                        pattern="^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})$"
+                        title="Digite um CPF (11 dígitos) ou CNPJ (14 dígitos) válido.">
+                </div>
+
+                <div class="mb-3">
+                    <label for="register-senha" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="register-senha" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="submit" class="btn btn-custom-site-filled">Cadastrar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Bootstrap JS (Obrigatório para o Modal funcionar) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  spa-frontend:
+    build: .
+    container_name: puc-rio-sdba-mvp-spa
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/usr/share/nginx/html
+    restart: always
